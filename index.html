@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verve Racing</title>
+<meta name="description" content="Verve makes Assetto Corsa's AI drive like people. Vote on the next race scenario for the Verve Racing channel.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  --ground:#f2f0ea; --ground-2:#e8e5dd; --ink:#171b21; --ink-2:#4a5460; --ink-3:#7b8592; --line:#d3cfc4;
+  --accent:#e0b400; --accent-ink:#171b21; --accent-soft:#f7e6a1;
+  --open:#3c7ac9; --queued:#8d5fd3; --recording:#d9652b; --done:#2d8a5b; --merged:#7b8592;
+  --panel:#ffffff; --shadow:0 1px 0 rgba(23,27,33,.06), 0 8px 24px -16px rgba(23,27,33,.35);
+  --display:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  --body:"Source Sans 3","Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"JetBrains Mono",Consolas,"Courier New",monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#141a22; --ground-2:#1b232d; --ink:#f1efe6; --ink-2:#b4bcc6; --ink-3:#7f8a97; --line:#2b3542;
+    --accent:#ffd23f; --accent-ink:#171b21; --accent-soft:#3a3215;
+    --open:#6ea3e6; --queued:#b394ea; --recording:#f08a4d; --done:#4fbf85; --merged:#7f8a97;
+    --panel:#1b232d; --shadow:0 1px 0 rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141a22; --ground-2:#1b232d; --ink:#f1efe6; --ink-2:#b4bcc6; --ink-3:#7f8a97; --line:#2b3542;
+  --accent:#ffd23f; --accent-ink:#171b21; --accent-soft:#3a3215;
+  --open:#6ea3e6; --queued:#b394ea; --recording:#f08a4d; --done:#4fbf85; --merged:#7f8a97;
+  --panel:#1b232d; --shadow:0 1px 0 rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--ground)}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;padding:0 20px 80px}
+a{color:inherit}
+.wrap{max-width:1040px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1;letter-spacing:.005em}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* header */
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 0 8px;border-bottom:3px solid var(--ink)}
+.brand{display:flex;align-items:baseline;gap:10px;text-decoration:none}
+.brand b{font-family:var(--display);font-weight:700;font-size:34px;letter-spacing:.02em;text-transform:uppercase}
+.brand i{font-style:normal;font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--ink-3);text-transform:uppercase}
+nav{display:flex;gap:18px;flex-wrap:wrap;font-family:var(--display);font-size:18px;text-transform:uppercase;letter-spacing:.06em}
+nav a{text-decoration:none;color:var(--ink-2);border-bottom:2px solid transparent;padding-bottom:2px}
+nav a:hover{color:var(--ink);border-color:var(--accent)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:end;padding:44px 0 36px;border-bottom:1px solid var(--line)}
+.hero h1{font-size:clamp(46px,7vw,84px);font-weight:700;text-transform:uppercase}
+.hero h1 em{font-style:normal;color:var(--accent);-webkit-text-stroke:0}
+.hero p{font-size:19px;max-width:38ch;color:var(--ink-2);margin:16px 0 22px}
+.cta{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:var(--accent-ink);font-family:var(--display);font-size:21px;text-transform:uppercase;letter-spacing:.06em;padding:12px 20px;text-decoration:none;border:2px solid var(--accent-ink)}
+.cta:hover{filter:brightness(1.05)}
+.cta.ghost{background:transparent;color:var(--ink);border-color:var(--ink);margin-left:10px}
+.facts{display:grid;gap:10px;border-left:3px solid var(--accent);padding-left:16px}
+.facts div{display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:baseline}
+.facts .k{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.facts .v{font-family:var(--display);font-size:26px;font-weight:600}
+.facts .v small{font-family:var(--body);font-size:15px;font-weight:400;color:var(--ink-2)}
+
+/* board */
+section{padding:40px 0 0}
+.sechead{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.sechead h2{font-size:38px;text-transform:uppercase;font-weight:700}
+.sechead p{margin:6px 0 0;color:var(--ink-2);max-width:62ch}
+.tabs{display:flex;gap:2px;background:var(--ground-2);padding:3px;border:1px solid var(--line)}
+.tabs button{font:600 15px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;background:transparent;border:0;color:var(--ink-2);padding:9px 14px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--ground)}
+.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.board{border-top:2px solid var(--ink);margin-top:10px}
+.row{display:grid;grid-template-columns:52px 1fr auto;gap:0 18px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.row .pos{font-family:var(--display);font-size:30px;font-weight:700;color:var(--ink-3);text-align:right;font-variant-numeric:tabular-nums}
+.row.top .pos{color:var(--ink)}
+.row .main{min-width:0}
+.row .title{font-family:var(--display);font-size:24px;font-weight:600;line-height:1.05;text-wrap:balance}
+.row .desc{color:var(--ink-2);margin:4px 0 0;font-size:16px;max-width:70ch}
+.row .meta{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-top:8px;font-size:13px;color:var(--ink-3)}
+.pill{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border:1px solid currentColor;line-height:1.4}
+.pill.open{color:var(--open)} .pill.queued{color:var(--queued)} .pill.recording{color:var(--recording)} .pill.done{color:var(--done)} .pill.merged{color:var(--merged)}
+.pill.supporter{color:var(--accent-ink);background:var(--accent);border-color:var(--accent)}
+.vote{display:grid;grid-template-columns:auto auto auto;align-items:center;gap:6px}
+.vote button{width:38px;height:38px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink-2);font-size:18px;cursor:pointer;line-height:1}
+.vote button:hover{border-color:var(--ink)}
+.vote button[aria-pressed="true"]{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.vote button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.vote .n{font-family:var(--mono);font-weight:600;font-size:18px;min-width:3ch;text-align:center;font-variant-numeric:tabular-nums}
+.row.done .vote{display:none}
+.watch{font-family:var(--display);font-size:18px;text-transform:uppercase;letter-spacing:.06em;color:var(--done);text-decoration:none;border-bottom:2px solid var(--done)}
+.empty{padding:28px 0;color:var(--ink-3)}
+.err{color:var(--recording)}
+
+/* submit */
+.submit{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:14px;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);padding:26px}
+.submit h3{font-size:28px;text-transform:uppercase;font-weight:700}
+.submit p{color:var(--ink-2);margin:8px 0 0}
+.submit ol{margin:12px 0 0;padding-left:20px;color:var(--ink-2)}
+form{display:grid;gap:12px}
+label{display:grid;gap:5px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-family:var(--mono)}
+input,textarea{font:inherit;font-family:var(--body);color:var(--ink);background:var(--ground);border:1.5px solid var(--line);padding:10px 12px;width:100%}
+input:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--ink)}
+textarea{min-height:110px;resize:vertical}
+.hp{position:absolute;left:-9999px;opacity:0;height:0;width:0}
+.formfoot{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+button.go{font:700 20px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;background:var(--ink);color:var(--ground);border:2px solid var(--ink);padding:12px 20px;cursor:pointer}
+button.go:disabled{opacity:.5;cursor:wait}
+.note{font-size:14px;color:var(--ink-3)}
+.result{padding:12px 14px;border-left:3px solid var(--accent);background:var(--accent-soft);font-size:15px}
+.result.bad{border-color:var(--recording);background:transparent;color:var(--recording)}
+
+/* footer */
+footer{margin-top:60px;border-top:3px solid var(--ink);padding-top:18px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--ink-3);font-size:14px}
+footer a{color:var(--ink-2)}
+.credits{max-width:70ch}
+
+@media (max-width:760px){
+  .hero{grid-template-columns:1fr;gap:20px;padding:30px 0 26px}
+  .submit{grid-template-columns:1fr}
+  .row{grid-template-columns:40px 1fr;grid-template-rows:auto auto}
+  .row .vote{grid-column:2;justify-self:start}
+  .row .pos{font-size:24px}
+  nav{font-size:16px;gap:12px}
+  .cta.ghost{margin-left:0;margin-top:8px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .row{transition:background-color .15s}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a class="brand" href="#top"><b>Verve</b><i>Racing</i></a>
+  <nav>
+    <a href="#board">Vote</a>
+    <a href="#submit">Request a race</a>
+    <a href="#done">Watch</a>
+    <a href="https://github.com/ververacing/verve" rel="noopener">Get Verve</a>
+  </nav>
+</header>
+
+<section class="hero" id="top">
+  <div>
+    <div class="eyebrow">Assetto Corsa &middot; free mod &middot; AI that races like people</div>
+    <h1>The AI that<br>keeps <em>racing.</em></h1>
+    <p>Verve gives Assetto Corsa's AI human pace, mistakes, racecraft and self-recovery, so a race stays a race to the flag. The channel puts it to the test. You pick the tests.</p>
+    <a class="cta" href="https://github.com/ververacing/verve/releases/latest" rel="noopener">Download Verve</a>
+    <a class="cta ghost" href="#board">Vote on the next race</a>
+  </div>
+  <div class="facts" aria-label="What Verve does">
+    <div><span class="k">Pace</span><span class="v">Human <small>per-driver variability, cold tyres, dirty air</small></span></div>
+    <div><span class="k">Racecraft</span><span class="v">Real <small>attack, defend, blue flags, yellow flags</small></span></div>
+    <div><span class="k">Recovery</span><span class="v">18 / 18 <small>full grids to the flag instead of 4 / 18 stock</small></span></div>
+    <div><span class="k">Difficulty</span><span class="v">Honest <small>80 means a beginner field, 100 means the best</small></span></div>
+  </div>
+</section>
+
+<section id="board">
+  <div class="sechead">
+    <div>
+      <h2>What should Verve race next?</h2>
+      <p>Every video on the channel starts here. Vote a scenario up, or request your own below. Supporters' requests go to the front of the queue.</p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Board filter">
+      <button role="tab" aria-selected="true" data-tab="open" id="tab-open">Open</button>
+      <button role="tab" aria-selected="false" data-tab="progress" id="tab-progress">In progress</button>
+      <button role="tab" aria-selected="false" data-tab="done" id="tab-done">Recorded</button>
+    </div>
+  </div>
+  <div class="board" id="rows" aria-live="polite"><div class="empty">Loading the board&hellip;</div></div>
+</section>
+
+<section id="submit">
+  <div class="sechead"><div><h2>Request a race</h2></div></div>
+  <div class="submit">
+    <div>
+      <h3>How it works</h3>
+      <ol>
+        <li>Describe the matchup: cars, track, twist. "GT3s versus 1960s F1 at Monza." "A chair mod against four Cobras."</li>
+        <li>A filter checks it's a race idea and safe for work, tidies the title, and merges duplicates into the existing request so votes add up.</li>
+        <li>Top-voted requests get recorded with full commentary. Recorded ones move to the Watch list with the video.</li>
+        <li>Mod links are welcome, from OverTake or RaceDepartment only.</li>
+      </ol>
+      <p>Supported the channel on Ko-fi? Add the email you used and your request is flagged for priority. It's checked against Ko-fi's records, never shown.</p>
+    </div>
+    <form id="form" novalidate>
+      <label>Title <input id="f-title" name="title" maxlength="140" required placeholder="Chair mod vs Shelby Cobras at Brands Hatch"></label>
+      <label>What happens <textarea id="f-desc" name="description" maxlength="1500" placeholder="Ten laps, the chair starts on pole, can it hold anyone off into Paddock Hill?"></textarea></label>
+      <label>Mod link (optional) <input id="f-mod" name="mod_url" type="url" placeholder="https://www.overtake.gg/downloads/..."></label>
+      <label>Your handle (optional, shown on the board) <input id="f-req" name="requester" maxlength="32" placeholder="TC"></label>
+      <label>Ko-fi email (optional, for supporter priority) <input id="f-kofi" name="kofi_email" type="email" autocomplete="email"></label>
+      <div class="hp" aria-hidden="true"><label>Leave empty <input id="f-hp" name="hp" tabindex="-1" autocomplete="off"></label></div>
+      <div id="turnstile"></div>
+      <div class="formfoot">
+        <button class="go" id="go" type="submit">Send it to the board</button>
+        <span class="note">Three requests an hour per person.</span>
+      </div>
+      <div id="result" hidden></div>
+    </form>
+  </div>
+</section>
+
+<section id="done">
+  <div class="sechead"><div><h2>Recorded</h2><p>Requests that became videos.</p></div></div>
+  <div class="board" id="donerows"><div class="empty">Nothing recorded yet. The first votes decide it.</div></div>
+</section>
+
+<footer>
+  <div class="credits">Verve Racing is an independent channel and mod project by TC Verve. Assetto Corsa is by Kunos Simulazioni. Cars and tracks belong to their creators and are credited in every video. Not affiliated with any team, series or driver. AI drivers in videos are fictional.</div>
+  <div><a href="https://github.com/ververacing/verve" rel="noopener">GitHub</a> &nbsp;&middot;&nbsp; <a href="#top">Top</a></div>
+</footer>
+</div>
+
+<script>
+const SUPABASE_URL = "https://qcdnlochctwfsvslnqxo.supabase.co";
+const ANON_KEY = "sb_publishable_eaoWTXUhM7jcbZ8vBRhtYw_bPIcJa8W";   // read-only key: can list the board and call the two public functions
+const FN = SUPABASE_URL + "/functions/v1";
+const TURNSTILE_SITE_KEY = "";   // set once the Cloudflare Turnstile widget exists; empty = honeypot + rate limits only
+
+const clientId = (() => { try { let v = localStorage.getItem("verve.client"); if (!v) { v = crypto.randomUUID(); localStorage.setItem("verve.client", v); } return v; } catch { return "anon-" + Math.random().toString(36).slice(2, 14); } })();
+const myVotes = (() => { try { return JSON.parse(localStorage.getItem("verve.votes") || "{}"); } catch { return {}; } })();
+const saveVotes = () => { try { localStorage.setItem("verve.votes", JSON.stringify(myVotes)); } catch {} };
+
+let board = [];
+let tab = "open";
+const H = { "apikey": ANON_KEY, "Authorization": "Bearer " + ANON_KEY, "Content-Type": "application/json" };
+
+async function loadBoard() {
+  const r = await fetch(SUPABASE_URL + "/rest/v1/board?select=*&order=score.desc,created_at.desc&limit=300", { headers: H });
+  if (!r.ok) throw new Error("board " + r.status);
+  board = await r.json();
+  render();
+}
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const STATUS_LABEL = { open: "open", queued: "in the queue", recording: "recording", done: "recorded", merged: "merged" };
+
+function rowHtml(s, pos) {
+  const mine = myVotes[s.id] || 0;
+  const meta = [];
+  meta.push(`<span class="pill ${s.status}">${STATUS_LABEL[s.status] || s.status}</span>`);
+  if (s.supporter) meta.push(`<span class="pill supporter">supporter</span>`);
+  if (s.requester) meta.push(`<span>by ${esc(s.requester)}</span>`);
+  if (s.mod_url) meta.push(`<a href="${esc(s.mod_url)}" rel="noopener nofollow">mod link</a>`);
+  meta.push(`<span class="mono">${new Date(s.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>`);
+  const right = s.status === "done" && s.video_url
+    ? `<a class="watch" href="${esc(s.video_url)}" rel="noopener">Watch</a>`
+    : `<div class="vote" data-id="${s.id}">
+         <button type="button" data-v="1" aria-pressed="${mine === 1}" aria-label="Vote up">&#9650;</button>
+         <span class="n">${s.score}</span>
+         <button type="button" data-v="-1" aria-pressed="${mine === -1}" aria-label="Vote down">&#9660;</button>
+       </div>`;
+  return `<div class="row ${s.status}${pos <= 3 ? " top" : ""}" data-id="${s.id}">
+    <div class="pos">${pos}</div>
+    <div class="main"><div class="title">${esc(s.title)}</div>${s.description ? `<p class="desc">${esc(s.description)}</p>` : ""}<div class="meta">${meta.join("")}</div></div>
+    ${right}</div>`;
+}
+
+function render() {
+  const open = board.filter(s => s.status === "open");
+  const progress = board.filter(s => s.status === "queued" || s.status === "recording");
+  const done = board.filter(s => s.status === "done");
+  const supp = open.filter(s => s.supporter), rest = open.filter(s => !s.supporter);
+  const list = tab === "open" ? [...supp, ...rest] : tab === "progress" ? progress : done;
+  const el = document.getElementById("rows");
+  el.innerHTML = list.length ? list.map((s, i) => rowHtml(s, i + 1)).join("")
+    : `<div class="empty">${tab === "open" ? "No open requests yet. Yours would be first." : tab === "progress" ? "Nothing in the queue right now." : "Nothing recorded yet."}</div>`;
+  const d = document.getElementById("donerows");
+  d.innerHTML = done.length ? done.map((s, i) => rowHtml(s, i + 1)).join("") : `<div class="empty">Nothing recorded yet. The first votes decide it.</div>`;
+}
+
+document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
+  tab = b.dataset.tab;
+  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", x === b));
+  render();
+}));
+
+document.addEventListener("click", async e => {
+  const btn = e.target.closest(".vote button"); if (!btn) return;
+  const box = btn.closest(".vote"); const id = Number(box.dataset.id); const v = Number(btn.dataset.v);
+  const value = (myVotes[id] || 0) === v ? 0 : v;
+  box.querySelectorAll("button").forEach(x => x.disabled = true);
+  try {
+    const r = await fetch(FN + "/vote", { method: "POST", headers: H, body: JSON.stringify({ id, value, client: clientId }) });
+    const j = await r.json();
+    if (!r.ok || j.error) throw new Error(j.error || r.status);
+    myVotes[id] = j.mine; saveVotes();
+    const s = board.find(x => x.id === id); if (s) { s.votes_up = j.votes_up; s.votes_down = j.votes_down; s.score = j.score; }
+    board.sort((a, b) => b.score - a.score || (a.created_at < b.created_at ? 1 : -1));
+    render();
+  } catch (err) {
+    box.querySelector(".n").textContent = "!"; box.title = "Vote didn't go through: " + err.message;
+    box.querySelectorAll("button").forEach(x => x.disabled = false);
+  }
+});
+
+const form = document.getElementById("form");
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  const go = document.getElementById("go"); const out = document.getElementById("result");
+  const body = { title: form.title.value.trim(), description: form.description.value.trim(), mod_url: form.mod_url.value.trim(), requester: form.requester.value.trim(), kofi_email: form.kofi_email.value.trim(), hp: form.hp.value, client: clientId };
+  if (TURNSTILE_SITE_KEY && window.turnstile) body.turnstile = window.turnstile.getResponse();
+  if (body.title.length < 6) { out.hidden = false; out.className = "result bad"; out.textContent = "Give it a title of at least a few words."; return; }
+  go.disabled = true; out.hidden = false; out.className = "result"; out.textContent = "Checking it over…";
+  try {
+    const r = await fetch(FN + "/submit", { method: "POST", headers: H, body: JSON.stringify(body) });
+    const j = await r.json();
+    if (j.error) throw new Error(j.error);
+    if (!j.ok) { out.className = "result bad"; out.textContent = j.reason || "Didn't pass the filter."; }
+    else if (j.merged_into) { out.textContent = `That one's already on the board as "${j.existing_title}" — your vote was added to it.`; }
+    else { out.textContent = `On the board as "${j.title}"${j.supporter ? " with supporter priority" : ""}. Thanks!`; form.reset(); }
+    await loadBoard();
+  } catch (err) {
+    out.className = "result bad"; out.textContent = "Couldn't send it: " + err.message;
+  } finally { go.disabled = false; }
+});
+
+if (TURNSTILE_SITE_KEY) {
+  const s = document.createElement("script"); s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js"; s.async = true; s.defer = true;
+  s.onload = () => window.turnstile && window.turnstile.render("#turnstile", { sitekey: TURNSTILE_SITE_KEY, theme: "auto" });
+  document.head.appendChild(s);
+}
+loadBoard().catch(err => { document.getElementById("rows").innerHTML = `<div class="empty err">The board didn't load (${esc(err.message)}). Try again in a moment.</div>`; });
+</script>
+</body>
+</html>
