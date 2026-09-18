@@ -41,6 +41,10 @@ a{color:inherit}
 .wrap{max-width:1040px;margin:0 auto}
 h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1;letter-spacing:.005em}
 .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.tested{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;padding:10px 0 4px;border-bottom:1px solid var(--line);font-size:15px;color:var(--ink-2)}
+.tested .stat b{font-size:22px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;margin-right:4px}
+.tested .src{font-size:12px;color:var(--ink-3);margin-left:auto}
+@media (max-width:640px){.tested{gap:12px}.tested .src{margin-left:0;flex-basis:100%}}
 .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
 /* header */
@@ -147,6 +151,14 @@ footer a{color:var(--ink-2)}
   </nav>
 </header>
 
+<div class="tested" id="tested" aria-live="polite">
+  <span class="eyebrow">Tested across</span>
+  <span class="stat"><b class="mono" id="st-laps">&#8212;</b> laps</span>
+  <span class="stat"><b class="mono" id="st-cars">&#8212;</b> unique cars</span>
+  <span class="stat"><b class="mono" id="st-tracks">&#8212;</b> unique tracks</span>
+  <span class="src" id="st-src">our own test runs, plus every opted-in race report from players</span>
+</div>
+
 <section class="hero" id="top">
   <div>
     <div class="eyebrow">Assetto Corsa &middot; free mod &middot; AI that races like people</div>
@@ -232,6 +244,26 @@ const saveVotes = () => { try { localStorage.setItem("verve.votes", JSON.stringi
 let board = [];
 let tab = "open";
 const H = { "apikey": ANON_KEY, "Authorization": "Bearer " + ANON_KEY, "Content-Type": "application/json" };
+
+async function loadTested() {
+  try {
+    const r = await fetch(SUPABASE_URL + "/rest/v1/stats?select=laps,cars,tracks,community_reports", { headers: H });
+    if (!r.ok) return;
+    const rows = await r.json(); const s = rows && rows[0]; if (!s) return;
+    countUp("st-laps", Number(s.laps) || 0); countUp("st-cars", Number(s.cars) || 0); countUp("st-tracks", Number(s.tracks) || 0);
+    const n = Number(s.community_reports) || 0;
+    document.getElementById("st-src").textContent = n ? `our own test runs plus ${n.toLocaleString()} opted-in race reports from players` : "our own test runs so far; player race reports join the count as they arrive";
+  } catch {}
+}
+function countUp(id, target) {
+  const el = document.getElementById(id); if (!el) return;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce || target < 20) { el.textContent = target.toLocaleString(); return; }
+  const t0 = performance.now(), dur = 900;
+  const step = (t) => { const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3); el.textContent = Math.round(target * e).toLocaleString(); if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+loadTested();
 
 async function loadBoard() {
   const r = await fetch(SUPABASE_URL + "/rest/v1/board?select=*&order=score.desc,created_at.desc&limit=300", { headers: H });
