@@ -245,6 +245,20 @@ let board = [];
 let tab = "open";
 const H = { "apikey": ANON_KEY, "Authorization": "Bearer " + ANON_KEY, "Content-Type": "application/json" };
 
+// one visit beacon per page load: time, the page's random client id (no IP, no user agent), path, referrer host, utm
+(function logVisit() {
+  try {
+    if (sessionStorage.getItem("verve.visited")) return;               // one per tab session, not per reload
+    sessionStorage.setItem("verve.visited", "1");
+    const u = new URL(location.href);
+    const utm = ["utm_source", "utm_medium", "utm_campaign"].map(k => u.searchParams.get(k)).filter(Boolean).join("/") || null;
+    let ref = null; try { ref = document.referrer ? new URL(document.referrer).hostname : null; } catch {}
+    if (ref === location.hostname) ref = null;
+    fetch(SUPABASE_URL + "/rest/v1/site_visits", { method: "POST", headers: { ...H, "Prefer": "return=minimal" }, keepalive: true,
+      body: JSON.stringify({ client_id: clientId, path: u.pathname.slice(0, 200), referrer: ref, utm }) }).catch(() => {});
+  } catch {}
+})();
+
 async function loadTested() {
   try {
     const r = await fetch(SUPABASE_URL + "/rest/v1/stats?select=laps,cars,tracks,community_reports", { headers: H });
