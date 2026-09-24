@@ -248,10 +248,18 @@ const H = { "apikey": ANON_KEY, "Authorization": "Bearer " + ANON_KEY, "Content-
 // one visit beacon per page load: time, the page's random client id (no IP, no user agent), path, referrer host, utm
 (function logVisit() {
   try {
-    if (sessionStorage.getItem("verve.visited")) return;               // one per tab session, not per reload
-    sessionStorage.setItem("verve.visited", "1");
     const u = new URL(location.href);
-    const utm = ["utm_source", "utm_medium", "utm_campaign"].map(k => u.searchParams.get(k)).filter(Boolean).join("/") || null;
+    const tagging = u.searchParams.has("mine");
+    if (!tagging && sessionStorage.getItem("verve.visited")) return;    // one per tab session, not per reload
+    sessionStorage.setItem("verve.visited", "1");
+    // our own machines tag themselves once with ?mine=1 (?mine=0 clears it) so they can be excluded from the
+    // traffic numbers; the flag is per browser profile and rides along as utm="internal" from then on
+    const mine = u.searchParams.get("mine");
+    if (mine === "1") { try { localStorage.setItem("verve.internal", "1"); } catch {} }
+    if (mine === "0") { try { localStorage.removeItem("verve.internal"); } catch {} }
+    let internal = false; try { internal = localStorage.getItem("verve.internal") === "1"; } catch {}
+    const utm = internal ? "internal"
+      : (["utm_source", "utm_medium", "utm_campaign"].map(k => u.searchParams.get(k)).filter(Boolean).join("/") || null);
     let ref = null; try { ref = document.referrer ? new URL(document.referrer).hostname : null; } catch {}
     if (ref === location.hostname) ref = null;
     fetch(SUPABASE_URL + "/rest/v1/site_visits", { method: "POST", headers: { ...H, "Prefer": "return=minimal" }, keepalive: true,
