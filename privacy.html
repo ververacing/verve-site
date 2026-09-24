@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy — Verve Racing</title>
+<meta name="description" content="What Verve Racing collects, why, and how to switch it off. Short version: almost nothing, and the race telemetry is off unless you turn it on.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root{
+  --ground:#f2f0ea; --ink:#171b21; --ink-2:#4a5460; --ink-3:#7b8592; --line:#d3cfc4;
+  --accent:#e0b400; --panel:#ffffff;
+  --display:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  --body:"Source Sans 3","Segoe UI",Helvetica,Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#141a22; --ink:#f1efe6; --ink-2:#b4bcc6; --ink-3:#7f8a97; --line:#2b3542;
+    --accent:#ffd23f; --panel:#1b232d; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141a22; --ink:#f1efe6; --ink-2:#b4bcc6; --ink-3:#7f8a97; --line:#2b3542;
+  --accent:#ffd23f; --panel:#1b232d; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--ground)}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;padding:0 20px 80px}
+main{max-width:720px;margin:0 auto}
+a{color:inherit}
+h1{font-family:var(--display);font-size:clamp(34px,7vw,52px);line-height:1.05;letter-spacing:.01em;margin:48px 0 6px;text-transform:uppercase}
+h2{font-family:var(--display);font-size:clamp(22px,4vw,28px);text-transform:uppercase;letter-spacing:.02em;margin:38px 0 8px;padding-top:14px;border-top:1px solid var(--line)}
+.sub{color:var(--ink-3);margin:0 0 8px}
+.lede{font-size:19px;color:var(--ink-2)}
+ul{padding-left:20px}
+li{margin:7px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:16px 0}
+.card h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.02em;margin:0 0 6px;font-size:19px}
+code{font-size:15px;background:rgba(127,138,151,.15);padding:1px 5px;border-radius:4px}
+footer{margin-top:44px;padding-top:14px;border-top:1px solid var(--line);color:var(--ink-3);font-size:15px}
+</style>
+</head>
+<body>
+<main>
+
+<h1>Privacy</h1>
+<p class="sub">Verve Racing · last updated 24 September 2026</p>
+
+<p class="lede">Verve is a free mod and a small website run by one person. There is no advertising, nothing is sold
+to anyone, and there is no tracking across other sites. The race telemetry in the mod is <strong>off unless you
+turn it on</strong>. This page says exactly what is collected in each place, because "we value your privacy" is not
+information.</p>
+
+<h2>The Verve mod, in Assetto Corsa</h2>
+
+<div class="card">
+  <h3>Anonymous race reports — off by default</h3>
+  <p>The mod can send a short report at the end of a session. It is a setting you switch on yourself; if you never
+  touch it, nothing ever leaves your PC.</p>
+  <p>A report contains a random identifier generated on your machine the first time it runs, and technical detail
+  about the session: the track and layout, the cars in the grid and their classes, the AI difficulty, lap times,
+  incident and overtake counts, how often the mod repositioned a stuck car, retirements, average frame rate, the
+  weather and time of day, your Assetto Corsa and Custom Shaders Patch versions, and the mod's own settings.</p>
+  <p>It does not contain your name, your Steam or Windows account, your email, your IP address, file paths from
+  your PC, your location, or anything you type. The random identifier is not linked to you and is only there so
+  that fifty races from one person are not mistaken for fifty different people.</p>
+  <p>This exists so the AI can be fixed against real races rather than only the ones tested here. Reports are read
+  privately; only totals ever appear in public, never a row.</p>
+</div>
+
+<h2>This website</h2>
+
+<div class="card">
+  <h3>Visits</h3>
+  <p>One record per visit: the time, the page address, the hostname of the site that linked you here (not the full
+  address), any campaign parameters in the link, and a random identifier kept in your own browser's storage so that
+  one person reloading the page is not counted as a crowd. No IP address is stored, no account, no name. There is
+  no analytics service, no advertising network, and no cookies used for advertising.</p>
+</div>
+
+<div class="card">
+  <h3>Voting on the race board</h3>
+  <p>A vote is stored with that same random browser identifier, so the board can stop the same browser voting twice.
+  Nothing else.</p>
+</div>
+
+<div class="card">
+  <h3>Submitting a race request</h3>
+  <p>The form sends what you type into it: the title, the description and any mod link. Two fields are optional and
+  are the only place this site asks for anything personal — <strong>a name or handle</strong>, used to credit the
+  request if it becomes a video, and <strong>an email address</strong>, used only to check it against Ko-fi
+  supporters so a supporter's request can be prioritised. Neither is published unless you put it in the request
+  itself, neither is added to a mailing list, and there is no mailing list.</p>
+  <p>Cloudflare Turnstile runs on the form to keep bots off the board. It is a challenge widget rather than an
+  analytics product, and Cloudflare's own privacy terms apply to it.</p>
+</div>
+
+<h2>The YouTube channel and the Google connection</h2>
+
+<div class="card">
+  <p>Videos are published to the Verve Racing channel with a private tool that signs in through Google as the
+  channel owner. That sign-in authorises uploading videos, setting their titles, descriptions, captions and
+  thumbnails, and reading the channel's own performance figures.</p>
+  <p>It is used by the channel owner on the owner's own channel. It does not ask for, receive, or store data from
+  anyone else's Google account, and no data obtained through Google APIs is shared with any third party, used for
+  advertising, or used to build a profile of anybody. Google's own <a
+  href="https://policies.google.com/privacy">privacy policy</a> covers the sign-in itself.</p>
+  <p>If you comment on a video, that comment lives on YouTube under YouTube's terms. Comments are read to decide
+  what to make next; they are not exported anywhere.</p>
+</div>
+
+<h2>Where it is kept, and for how long</h2>
+<ul>
+  <li>Race reports, visit records, votes and requests are stored in a Supabase database (Supabase Inc., hosted in
+  the United States).</li>
+  <li>This site is served by GitHub Pages (GitHub, Inc.). GitHub may keep its own server logs, which we do not see
+  or control.</li>
+  <li>Race reports are kept while they are still useful for improving the mod. Visit records are kept as counts.
+  There is no schedule for deleting them because none of it identifies a person; if that changes, this page
+  changes with it.</li>
+</ul>
+
+<h2>Your choices</h2>
+<ul>
+  <li><strong>The mod's telemetry is off unless you switch it on</strong>, in the Verve panel in-game, and you can
+  switch it off again at any time.</li>
+  <li>Clearing your browser's site data for this site removes the random identifier; you become a new,
+  unconnected visitor.</li>
+  <li>If you submitted a request with your name or email and want it removed, ask and it will be removed.</li>
+  <li>If you want the reports from your install deleted, tell us the install identifier shown in the Verve panel
+  and they will be deleted.</li>
+</ul>
+
+<h2>Children</h2>
+<p>This is not directed at children under 13 and does not knowingly collect anything from them.</p>
+
+<h2>Changes</h2>
+<p>If what is collected changes, this page is updated and the date at the top changes with it. There is no archive
+of old versions; the page history is public in the site's repository.</p>
+
+<h2>Contact</h2>
+<p>Questions, corrections or deletion requests: <a href="mailto:tcverve@gmail.com">tcverve@gmail.com</a>.</p>
+
+<footer>
+  <a href="./">← Back to Verve Racing</a>
+</footer>
+
+</main>
+</body>
+</html>
