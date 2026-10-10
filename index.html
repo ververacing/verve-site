@@ -4,14 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Verve Racing</title>
-<meta name="description" content="Verve makes Assetto Corsa's AI drive like people. Vote on the next race scenario for the Verve Racing channel.">
+<meta name="description" content="Verve is a free Assetto Corsa app that makes the AI race like people: human pace, real racecraft, honest mistakes, and cars that pick themselves up instead of sitting there.">
+<meta property="og:title" content="Verve &mdash; the AI that keeps racing">
+<meta property="og:description" content="A free app for Assetto Corsa. Human pace, racecraft, self-recovery. Any car, any track, no setup.">
+<meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
 <style>
 :root{
   --ground:#f2f0ea; --ground-2:#e8e5dd; --ink:#171b21; --ink-2:#4a5460; --ink-3:#7b8592; --line:#d3cfc4;
   --accent:#e0b400; --accent-ink:#171b21; --accent-soft:#f7e6a1;
-  --open:#3c7ac9; --queued:#8d5fd3; --recording:#d9652b; --done:#2d8a5b; --merged:#7b8592;
+  --good:#2d8a5b; --warm:#d9652b;
   --panel:#ffffff; --shadow:0 1px 0 rgba(23,27,33,.06), 0 8px 24px -16px rgba(23,27,33,.35);
   --display:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
   --body:"Source Sans 3","Segoe UI",Helvetica,Arial,sans-serif;
@@ -22,7 +25,7 @@
   :root:not([data-theme="light"]){
     --ground:#141a22; --ground-2:#1b232d; --ink:#f1efe6; --ink-2:#b4bcc6; --ink-3:#7f8a97; --line:#2b3542;
     --accent:#ffd23f; --accent-ink:#171b21; --accent-soft:#3a3215;
-    --open:#6ea3e6; --queued:#b394ea; --recording:#f08a4d; --done:#4fbf85; --merged:#7f8a97;
+    --good:#4fbf85; --warm:#f08a4d;
     --panel:#1b232d; --shadow:0 1px 0 rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
     color-scheme:dark;
   }
@@ -30,22 +33,25 @@
 :root[data-theme="dark"]{
   --ground:#141a22; --ground-2:#1b232d; --ink:#f1efe6; --ink-2:#b4bcc6; --ink-3:#7f8a97; --line:#2b3542;
   --accent:#ffd23f; --accent-ink:#171b21; --accent-soft:#3a3215;
-  --open:#6ea3e6; --queued:#b394ea; --recording:#f08a4d; --done:#4fbf85; --merged:#7f8a97;
+  --good:#4fbf85; --warm:#f08a4d;
   --panel:#1b232d; --shadow:0 1px 0 rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-html{background:var(--ground)}
-body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;padding:0 20px 80px}
+html{background:var(--ground);scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;padding:0 20px}
 a{color:inherit}
 .wrap{max-width:1040px;margin:0 auto}
-h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1;letter-spacing:.005em}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.03;letter-spacing:.005em}
 .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* live counter bar */
 .tested{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;padding:10px 0 4px;border-bottom:1px solid var(--line);font-size:15px;color:var(--ink-2)}
 .tested .stat b{font-size:22px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;margin-right:4px}
 .tested .src{font-size:12px;color:var(--ink-3);margin-left:auto}
-@media (max-width:640px){.tested{gap:12px}.tested .src{margin-left:0;flex-basis:100%}}
-.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+@media (max-width:760px){.tested{gap:12px}.tested .src{margin-left:0;flex-basis:100%}}
 
 /* header */
 header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 0 8px;border-bottom:3px solid var(--ink)}
@@ -55,197 +61,281 @@ header{display:flex;align-items:center;justify-content:space-between;gap:16px;pa
 nav{display:flex;gap:18px;flex-wrap:wrap;font-family:var(--display);font-size:18px;text-transform:uppercase;letter-spacing:.06em}
 nav a{text-decoration:none;color:var(--ink-2);border-bottom:2px solid transparent;padding-bottom:2px}
 nav a:hover{color:var(--ink);border-color:var(--accent)}
+@media (max-width:760px){nav{font-size:16px;gap:12px}}
 
 /* hero */
-.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:end;padding:44px 0 36px;border-bottom:1px solid var(--line)}
-.hero h1{font-size:clamp(46px,7vw,84px);font-weight:700;text-transform:uppercase}
-.hero h1 em{font-style:normal;color:var(--accent);-webkit-text-stroke:0}
-.hero p{font-size:19px;max-width:38ch;color:var(--ink-2);margin:16px 0 22px}
+.hero{display:grid;grid-template-columns:1.25fr .75fr;gap:36px;align-items:end;padding:46px 0 38px;border-bottom:1px solid var(--line)}
+.hero h1{font-size:clamp(46px,7.4vw,86px);font-weight:700;text-transform:uppercase}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p.lede{font-size:19px;max-width:42ch;color:var(--ink-2);margin:18px 0 24px}
 .cta{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:var(--accent-ink);font-family:var(--display);font-size:21px;text-transform:uppercase;letter-spacing:.06em;padding:12px 20px;text-decoration:none;border:2px solid var(--accent-ink)}
 .cta:hover{filter:brightness(1.05)}
-.cta.ghost{background:transparent;color:var(--ink);border-color:var(--ink);margin-left:10px}
-.facts{display:grid;gap:10px;border-left:3px solid var(--accent);padding-left:16px}
-.facts div{display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:baseline}
+.cta.ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
+.ctarow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.undercta{font-size:14px;color:var(--ink-3);margin:12px 0 0}
+.facts{display:grid;gap:12px;border-left:3px solid var(--accent);padding-left:16px}
+.facts div{display:grid;grid-template-columns:104px 1fr;gap:12px;align-items:baseline}
 .facts .k{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
-.facts .v{font-family:var(--display);font-size:26px;font-weight:600}
-.facts .v small{font-family:var(--body);font-size:15px;font-weight:400;color:var(--ink-2)}
+.facts .v{font-family:var(--display);font-size:25px;font-weight:600}
+.facts .v small{display:block;font-family:var(--body);font-size:15px;font-weight:400;color:var(--ink-2);line-height:1.4;margin-top:2px}
+@media (max-width:860px){.hero{grid-template-columns:1fr;align-items:start;gap:26px;padding:32px 0 28px}}
 
-/* board */
-section{padding:40px 0 0}
-.sechead{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
-.sechead h2{font-size:38px;text-transform:uppercase;font-weight:700}
-.sechead p{margin:6px 0 0;color:var(--ink-2);max-width:62ch}
-.tabs{display:flex;gap:2px;background:var(--ground-2);padding:3px;border:1px solid var(--line)}
-.tabs button{font:600 15px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;background:transparent;border:0;color:var(--ink-2);padding:9px 14px;cursor:pointer}
-.tabs button[aria-selected="true"]{background:var(--ink);color:var(--ground)}
-.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.board{border-top:2px solid var(--ink);margin-top:10px}
-.row{display:grid;grid-template-columns:52px 1fr auto;gap:0 18px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
-.row .pos{font-family:var(--display);font-size:30px;font-weight:700;color:var(--ink-3);text-align:right;font-variant-numeric:tabular-nums}
-.row.top .pos{color:var(--ink)}
-.row .main{min-width:0}
-.row .title{font-family:var(--display);font-size:24px;font-weight:600;line-height:1.05;text-wrap:balance}
-.row .desc{color:var(--ink-2);margin:4px 0 0;font-size:16px;max-width:70ch}
-.row .meta{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-top:8px;font-size:13px;color:var(--ink-3)}
-.pill{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border:1px solid currentColor;line-height:1.4}
-.pill.open{color:var(--open)} .pill.queued{color:var(--queued)} .pill.recording{color:var(--recording)} .pill.done{color:var(--done)} .pill.merged{color:var(--merged)}
-.pill.supporter{color:var(--accent-ink);background:var(--accent);border-color:var(--accent)}
-.vote{display:grid;grid-template-columns:auto auto auto;align-items:center;gap:6px}
-.vote button{width:38px;height:38px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink-2);font-size:18px;cursor:pointer;line-height:1}
-.vote button:hover{border-color:var(--ink)}
-.vote button[aria-pressed="true"]{background:var(--ink);color:var(--ground);border-color:var(--ink)}
-.vote button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.vote .n{font-family:var(--mono);font-weight:600;font-size:18px;min-width:3ch;text-align:center;font-variant-numeric:tabular-nums}
-.row.done .vote{display:none}
-.watch{font-family:var(--display);font-size:18px;text-transform:uppercase;letter-spacing:.06em;color:var(--done);text-decoration:none;border-bottom:2px solid var(--done)}
-.empty{padding:28px 0;color:var(--ink-3)}
-.err{color:var(--recording)}
+/* sections */
+section{padding:48px 0 0}
+.sechead{margin-bottom:22px}
+.sechead h2{font-size:clamp(30px,4vw,44px);font-weight:700;text-transform:uppercase}
+.sechead p{color:var(--ink-2);max-width:64ch;margin:10px 0 0}
+hr.rule{border:0;border-top:1px solid var(--line);margin:48px 0 0}
 
-/* submit */
-.submit{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:14px;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);padding:26px}
-.submit h3{font-size:28px;text-transform:uppercase;font-weight:700}
-.submit p{color:var(--ink-2);margin:8px 0 0}
-.submit ol{margin:12px 0 0;padding-left:20px;color:var(--ink-2)}
-form{display:grid;gap:12px}
-label{display:grid;gap:5px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-family:var(--mono)}
-input,textarea{font:inherit;font-family:var(--body);color:var(--ink);background:var(--ground);border:1.5px solid var(--line);padding:10px 12px;width:100%}
-input:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--ink)}
-textarea{min-height:110px;resize:vertical}
-.hp{position:absolute;left:-9999px;opacity:0;height:0;width:0}
-.formfoot{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-button.go{font:700 20px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;background:var(--ink);color:var(--ground);border:2px solid var(--ink);padding:12px 20px;cursor:pointer}
-button.go:disabled{opacity:.5;cursor:wait}
-.note{font-size:14px;color:var(--ink-3)}
-.result{padding:12px 14px;border-left:3px solid var(--accent);background:var(--accent-soft);font-size:15px}
-.result.bad{border-color:var(--recording);background:transparent;color:var(--recording)}
+/* before / after */
+.turn{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--ink)}
+.turn > div{padding:22px 24px}
+.turn .before{border-right:2px solid var(--ink);background:var(--ground-2)}
+.turn h3{font-size:21px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.turn .before h3{color:var(--ink-3)}
+.turn .after h3{color:var(--accent)}
+.turn ul{margin:0;padding-left:18px;color:var(--ink-2)}
+.turn li{margin:8px 0}
+.turn .after li{color:var(--ink)}
+@media (max-width:760px){.turn{grid-template-columns:1fr}.turn .before{border-right:0;border-bottom:2px solid var(--ink)}}
 
-/* footer */
-footer{margin-top:60px;border-top:3px solid var(--ink);padding-top:18px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--ink-3);font-size:14px}
-footer a{color:var(--ink-2)}
-.credits{max-width:70ch}
+/* features */
+.feats{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.feat{background:var(--ground);padding:24px}
+.feat h3{font-size:24px;text-transform:uppercase;letter-spacing:.03em;display:flex;align-items:baseline;gap:10px}
+.feat h3 span{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.1em}
+.feat p{color:var(--ink-2);margin:10px 0 0}
+@media (max-width:760px){.feats{grid-template-columns:1fr}}
 
-@media (max-width:760px){
-  .hero{grid-template-columns:1fr;gap:20px;padding:30px 0 26px}
-  .submit{grid-template-columns:1fr}
-  .row{grid-template-columns:40px 1fr;grid-template-rows:auto auto}
-  .row .vote{grid-column:2;justify-self:start}
-  .row .pos{font-size:24px}
-  nav{font-size:16px;gap:12px}
-  .cta.ghost{margin-left:0;margin-top:8px}
-}
-@media (prefers-reduced-motion:no-preference){
-  .row{transition:background-color .15s}
-}
+/* proof */
+.proof{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.pcell{background:var(--ground);padding:20px}
+.pcell b{display:block;font-family:var(--display);font-size:40px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.pcell > span{display:block;color:var(--ink-2);font-size:15px;margin-top:6px}
+.pcell > span span{display:inline;color:inherit;font-size:inherit;margin:0}
+.pnote{font-size:13.5px;color:var(--ink-3);margin:14px 0 0;max-width:72ch}
+@media (max-width:860px){.proof{grid-template-columns:repeat(2,1fr)}}
+
+/* steps */
+.steps{display:grid;gap:16px;counter-reset:s}
+.step{display:grid;grid-template-columns:42px 1fr;gap:16px;align-items:start}
+.step .n{counter-increment:s;font-family:var(--display);font-size:32px;font-weight:700;color:var(--accent);line-height:1}
+.step .n::before{content:counter(s)}
+.step h3{font-size:21px;text-transform:uppercase;letter-spacing:.04em}
+.step p{color:var(--ink-2);margin:4px 0 0}
+.step code{font-family:var(--mono);font-size:14px;background:var(--ground-2);padding:1px 6px}
+
+/* quiet support line */
+.kofi-inline{margin-top:18px;font-size:15px;color:var(--ink-3)}
+.kofi-inline a{border-bottom:1px solid var(--accent);text-decoration:none}
+
+/* support block */
+.support{border:2px solid var(--ink);padding:26px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
+.support h2{font-size:32px;text-transform:uppercase}
+.support p{margin:8px 0 0;color:var(--ink-2);max-width:58ch}
+@media (max-width:760px){.support{grid-template-columns:1fr}}
+
+/* closing */
+.last{text-align:center;padding:56px 0 8px}
+.last h2{font-size:clamp(32px,5vw,54px);font-weight:700;text-transform:uppercase}
+.last p{color:var(--ink-2);max-width:48ch;margin:12px auto 22px}
+
+footer{margin-top:54px;border-top:3px solid var(--ink);padding:18px 0 48px;display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;font-size:15px;color:var(--ink-2)}
+footer a{text-decoration:none;border-bottom:1px solid var(--line)}
+footer a:hover{border-color:var(--accent)}
+.credits{font-size:13.5px;color:var(--ink-3);max-width:66ch}
 </style>
 </head>
 <body>
 <div class="wrap">
+
 <header>
-  <a class="brand" href="#top"><b>Verve</b><i>Racing</i></a>
+  <a class="brand" href="#top"><b>Verve</b><i>Assetto Corsa</i></a>
   <nav>
-    <a href="#board">Vote</a>
-    <a href="#submit">Request a race</a>
-    <a href="#done">Watch</a>
-    <a href="https://github.com/ververacing/verve" rel="noopener">Get Verve</a>
-    <a href="https://ko-fi.com/ververacing" rel="noopener">Support</a>
+    <a href="#change">What changes</a>
+    <a href="#features">Features</a>
+    <a href="#proof">Proof</a>
+    <a href="#install">Install</a>
+    <a href="https://www.overtake.gg/downloads/verve-racing.86761/" rel="noopener">Download</a>
   </nav>
 </header>
 
 <div class="tested" id="tested" aria-live="polite">
-  <span class="eyebrow">Tested across</span>
+  <span class="eyebrow">Raced so far</span>
   <span class="stat"><b class="mono" id="st-laps">&#8212;</b> laps</span>
   <span class="stat"><b class="mono" id="st-cars">&#8212;</b> unique cars</span>
   <span class="stat"><b class="mono" id="st-tracks">&#8212;</b> unique tracks</span>
+  <span class="stat"><b class="mono" id="st-dl">&#8212;</b> downloads</span>
   <span class="src" id="st-src">our own test runs, plus every opted-in race report from players</span>
 </div>
 
 <section class="hero" id="top">
   <div>
-    <div class="eyebrow">Assetto Corsa &middot; free mod &middot; AI that races like people</div>
+    <div class="eyebrow">Free &middot; Custom Shaders Patch app &middot; any car, any track</div>
     <h1>The AI that<br>keeps <em>racing.</em></h1>
-    <p>Verve gives Assetto Corsa's AI human pace, mistakes, racecraft and self-recovery, so a race stays a race to the flag. The channel puts it to the test. You pick the tests.</p>
-    <a class="cta" href="https://github.com/ververacing/verve/releases/latest" rel="noopener">Download Verve</a>
-    <a class="cta ghost" href="#board">Vote on the next race</a>
+    <p class="lede">Assetto Corsa's AI is quick and tidy on an empty track. Put it in traffic and it stops being a race: it queues up behind a slower car for laps, never defends, and a spun car is parked for good. Verve fixes the racecraft, not the lap times.</p>
+    <div class="ctarow">
+      <a class="cta" href="https://www.overtake.gg/downloads/verve-racing.86761/" rel="noopener">Download on OverTake</a>
+      <a class="cta ghost" href="#change">See what changes</a>
+    </div>
+    <p class="undercta">No setup. Works with every car and track you already own, mods included.</p>
   </div>
-  <div class="facts" aria-label="What Verve does">
-    <div><span class="k">Pace</span><span class="v">Human <small>per-driver variability, cold tyres, dirty air</small></span></div>
-    <div><span class="k">Racecraft</span><span class="v">Real <small>attack, defend, blue flags, yellow flags</small></span></div>
-    <div><span class="k">Recovery</span><span class="v">18 / 18 <small>full grids to the flag instead of 4 / 18 stock</small></span></div>
-    <div><span class="k">Difficulty</span><span class="v">Honest <small>80 means a beginner field, 100 means the best</small></span></div>
+  <div class="facts" aria-label="At a glance">
+    <div><span class="k">Price</span><span class="v">Free<small>and it stays that way</small></span></div>
+    <div><span class="k">Needs</span><span class="v">CSP 0.2.x<small>build 3465 or newer</small></span></div>
+    <div><span class="k">Setup</span><span class="v">Drag &amp; drop<small>then tick one box in game</small></span></div>
+    <div><span class="k">Works on</span><span class="v">Anything<small>no per-car tuning, no track files</small></span></div>
   </div>
 </section>
 
-<section id="board">
+<section id="change">
   <div class="sechead">
-    <div>
-      <h2>What should Verve race next?</h2>
-      <p>Every video on the channel starts here. Vote a scenario up, or request your own below. Supporters' requests go to the front of the queue.</p>
+    <h2>What actually changes</h2>
+    <p>None of this is the difficulty slider in disguise. The cars still run the pace you asked for &mdash; they just race each other the way people do.</p>
+  </div>
+  <div class="turn">
+    <div class="before">
+      <h3>Stock AI</h3>
+      <ul>
+        <li>Sits behind a slower car for laps rather than trying a move</li>
+        <li>Never covers a line, so a pass costs you nothing</li>
+        <li>Every driver laps like a metronome, start to finish</li>
+        <li>One spin ends that car's day &mdash; it stays where it stopped</li>
+        <li>Turn one is either a pile-up or nothing at all</li>
+      </ul>
     </div>
-    <div class="tabs" role="tablist" aria-label="Board filter">
-      <button role="tab" aria-selected="true" data-tab="open" id="tab-open">Open</button>
-      <button role="tab" aria-selected="false" data-tab="progress" id="tab-progress">In progress</button>
-      <button role="tab" aria-selected="false" data-tab="done" id="tab-done">Recorded</button>
+    <div class="after">
+      <h3>With Verve</h3>
+      <ul>
+        <li>Closes up, pressures, and takes the inside when it opens</li>
+        <li>Makes one clean defensive move, then holds the line</li>
+        <li>Drivers drift lap to lap, fade late in a stint, feel pressure</li>
+        <li>Spun cars pick themselves up and rejoin when it is safe</li>
+        <li>The field holds its grid side all the way to the first apex</li>
+      </ul>
     </div>
   </div>
-  <div class="board" id="rows" aria-live="polite"><div class="empty">Loading the board&hellip;</div></div>
+  <p class="kofi-inline">It is free, and there is no paid version coming. If you would rather throw a few quid at it than nothing, <a href="https://ko-fi.com/ververacing" rel="noopener">there is a Ko-fi</a>.</p>
 </section>
 
-<section id="submit">
-  <div class="sechead"><div><h2>Request a race</h2></div></div>
-  <div class="submit">
-    <div>
-      <h3>How it works</h3>
-      <ol>
-        <li>Describe the matchup: cars, track, twist. "GT3s versus 1960s F1 at Monza." "A chair mod against four Cobras."</li>
-        <li>A filter checks it's a race idea and safe for work, tidies the title, and merges duplicates into the existing request so votes add up.</li>
-        <li>Top-voted requests get recorded with full commentary. Recorded ones move to the Watch list with the video.</li>
-        <li>Mod links are welcome, from OverTake or RaceDepartment only.</li>
-      </ol>
-      <p>Supported the channel on <a href="https://ko-fi.com/ververacing" rel="noopener">Ko-fi</a>? Add the email you used and your request is flagged for priority. It's checked against Ko-fi's records, never shown.</p>
+<section id="features">
+  <div class="sechead">
+    <h2>Under the hood</h2>
+    <p>Six things running every frame, for every AI car on track.</p>
+  </div>
+  <div class="feats">
+    <div class="feat">
+      <h3>Racecraft <span>01</span></h3>
+      <p>Cars close up and apply pressure, dive the inside of a corner when it is open, switch back when it is not, and pass on the side the defender is not covering. A defender gets one move, then it has to race. Collision awareness stays on, so they place a car rather than punt one.</p>
+      <p>Tactics go by class: a formula car builds the run from a long way back and places the pass precisely, a touring car leans on the brakes and dives.</p>
     </div>
-    <form id="form" novalidate>
-      <label>Title <input id="f-title" name="title" maxlength="140" required placeholder="Chair mod vs Shelby Cobras at Brands Hatch"></label>
-      <label>What happens <textarea id="f-desc" name="description" maxlength="1500" placeholder="Ten laps, the chair starts on pole, can it hold anyone off into Paddock Hill?"></textarea></label>
-      <label>Mod link (optional) <input id="f-mod" name="mod_url" type="url" placeholder="https://www.overtake.gg/downloads/..."></label>
-      <label>Your handle (optional, shown on the board) <input id="f-req" name="requester" maxlength="32" placeholder="TC"></label>
-      <label>Ko-fi email (optional, for supporter priority) <input id="f-kofi" name="kofi_email" type="email" autocomplete="email"></label>
-      <div class="hp" aria-hidden="true"><label>Leave empty <input id="f-hp" name="hp" tabindex="-1" autocomplete="off"></label></div>
-      <div id="turnstile"></div>
-      <div class="formfoot">
-        <button class="go" id="go" type="submit">Send it to the board</button>
-        <span class="note">Three requests an hour per person.</span>
-      </div>
-      <div id="result" hidden></div>
-    </form>
+    <div class="feat">
+      <h3>Human pace <span>02</span></h3>
+      <p>Every driver gets a little personality of their own &mdash; a baseline pace, lap-to-lap drift, tyre fade at the end of a stint, nerves under pressure from behind, and a tow down the straights.</p>
+      <p>The field strings out the way a real one does instead of arriving in a neat queue.</p>
+    </div>
+    <div class="feat">
+      <h3>Class-aware physics <span>03</span></h3>
+      <p>Cold tyres need heat, and slicks need far more of it than vintage rubber. Rain makes drivers careful in proportion to how wet it is. High-downforce cars lose front grip in dirty air through a corner and get it back on the straight, so they close up and then have to work.</p>
+      <p>The class is read off the car itself &mdash; its tags, then its own physics files &mdash; and you can override it when a mod fools the guess.</p>
+    </div>
+    <div class="feat">
+      <h3>Honest mistakes <span>04</span></h3>
+      <p>Occasional small bobbles on forgiving cars, and none at all on high-downforce open-wheelers, which do not wobble in real life either. Grip changes are rate-limited, so a mistake costs a driver time instead of snapping the car into a barrier.</p>
+    </div>
+    <div class="feat">
+      <h3>Self-recovery <span>05</span></h3>
+      <p>A spun or beached car that is not actually wrecked gets itself going again: gentle throttle, steering back towards the line, reverse out of a wall or out of a two-car lock, and a wait for traffic before it rejoins.</p>
+      <p>It never touches the race start or the pit exit, and genuinely wrecked cars still retire.</p>
+    </div>
+    <div class="feat">
+      <h3>A difficulty slider that means it <span>06</span></h3>
+      <p>80 is a beginner field, 90 club level, 100 a quick one &mdash; and the number you pick is the number you get, on every car. It works in Career too, where the game used to ignore it entirely.</p>
+      <p>Want to build a grid by hand instead? Give any slot its own driver, with its own pace, aggression and appetite for risk.</p>
+    </div>
   </div>
 </section>
 
-<section id="done">
-  <div class="sechead"><div><h2>Recorded</h2><p>Requests that became videos.</p></div></div>
-  <div class="board" id="donerows"><div class="empty">Nothing recorded yet. The first votes decide it.</div></div>
+<hr class="rule">
+
+<section id="proof">
+  <div class="sechead">
+    <h2>Numbers from other people's races</h2>
+    <p>Verve can send back one small anonymous summary when a race ends &mdash; no names, no file paths, no hardware. It is off until you turn it on. Everything below comes from the people who did.</p>
+  </div>
+  <div class="proof">
+    <div class="pcell"><b class="mono" id="p-rec">&#8212;</b><span>of spins recovered, so the field is still there at the flag</span></div>
+    <div class="pcell"><b class="mono" id="p-ms">&#8212;</b><span>milliseconds a frame, median &mdash; against 16.7 ms at 60 fps</span></div>
+    <div class="pcell"><b class="mono" id="p-err">&#8212;</b><span>script errors, across <span id="p-errn">every</span> race<span id="p-errs">s</span> sent back</span></div>
+    <div class="pcell"><b class="mono" id="p-installs">&#8212;</b><span>installs reporting, on <span id="p-builds">&#8212;</span> different CSP builds</span></div>
+  </div>
+  <p class="pnote">Recovery and performance figures as of <span id="p-asof">&#8212;</span>; the lap, car and track counts at the top of the page are live. A report holds a race summary and nothing else &mdash; the <a href="privacy.html">privacy page</a> lists every field.</p>
+</section>
+
+<section id="install">
+  <div class="sechead">
+    <h2>Three steps</h2>
+    <p>About a minute, start to finish.</p>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="n"></div>
+      <div><h3>Get the zip</h3><p>From <a href="https://www.overtake.gg/downloads/verve-racing.86761/" rel="noopener">OverTake</a>, or the <a href="https://github.com/ververacing/verve/releases/latest" rel="noopener">latest GitHub release</a> if you prefer. It is a couple of hundred kilobytes.</p></div>
+    </div>
+    <div class="step">
+      <div class="n"></div>
+      <div><h3>Drop it on Content Manager</h3><p>Drag the zip onto CM and confirm the install. No need to unzip it. Doing it by hand instead? Unzip so the folder lands at <code>assettocorsa/apps/lua/Verve</code>.</p></div>
+    </div>
+    <div class="step">
+      <div class="n"></div>
+      <div><h3>Open Verve in the sidebar</h3><p>Start any race, open <b>Verve AI</b> from the in-game sidebar, tick <b>Enable Verve</b>. That is the whole setup &mdash; everything else in that window is optional.</p></div>
+    </div>
+  </div>
+  <p class="pnote">Two things worth knowing: keep damage at 50% or more, and switch off any other AI mod. Verve will say so in its own window if it spots one &mdash; two apps writing the same AI values just fight each other.</p>
+</section>
+
+<hr class="rule">
+
+<section>
+  <div class="support">
+    <div>
+      <h2>Free, and staying free</h2>
+      <p>Verve is built by one person in their own time, and all of it is in the download &mdash; there is nothing held back for a paid tier. If it turned one of your races into something worth watching, a coffee keeps the next version coming.</p>
+    </div>
+    <a class="cta" href="https://ko-fi.com/ververacing" rel="noopener">Buy a coffee</a>
+  </div>
+</section>
+
+<section class="last">
+  <h2>Go and have a race</h2>
+  <p>Favourite car, a full grid, the difficulty you actually enjoy. See how much of the field is still racing at the flag.</p>
+  <div class="ctarow" style="justify-content:center">
+    <a class="cta" href="https://www.overtake.gg/downloads/verve-racing.86761/" rel="noopener">Download Verve</a>
+    <a class="cta ghost" href="https://www.youtube.com/@verve.racing" rel="noopener">Watch a race first</a>
+  </div>
 </section>
 
 <footer>
-  <div class="credits">Verve Racing is an independent channel and mod project by TC Verve. Assetto Corsa is by Kunos Simulazioni. Cars and tracks belong to their creators and are credited in every video. Not affiliated with any team, series or driver. AI drivers in videos are fictional.</div>
-  <div><a href="https://github.com/ververacing/verve" rel="noopener">GitHub</a> &nbsp;&middot;&nbsp; <a href="https://ko-fi.com/ververacing" rel="noopener">Ko-fi</a> &nbsp;&middot;&nbsp; <a href="privacy.html">Privacy</a> &nbsp;&middot;&nbsp; <a href="#top">Top</a></div>
+  <div>
+    <a href="https://www.overtake.gg/downloads/verve-racing.86761/" rel="noopener">OverTake</a> &nbsp;&middot;&nbsp;
+    <a href="https://github.com/ververacing/verve" rel="noopener">GitHub</a> &nbsp;&middot;&nbsp;
+    <a href="https://ko-fi.com/ververacing" rel="noopener">Ko-fi</a> &nbsp;&middot;&nbsp;
+    <a href="https://www.youtube.com/@verve.racing" rel="noopener">YouTube</a> &nbsp;&middot;&nbsp;
+    <a href="privacy.html">Privacy</a> &nbsp;&middot;&nbsp;
+    <a href="#top">Top</a>
+  </div>
+  <div class="credits">Verve is original work and contains no code from other AI mods. Built on the Custom Shaders Patch Lua SDK by x4fab. Assetto Corsa is by Kunos Simulazioni; Verve is not affiliated with Kunos, or with any team, series or driver.</div>
 </footer>
+
 </div>
 
 <script>
 const SUPABASE_URL = "https://qcdnlochctwfsvslnqxo.supabase.co";
-const ANON_KEY = "sb_publishable_eaoWTXUhM7jcbZ8vBRhtYw_bPIcJa8W";   // read-only key: can list the board and call the two public functions
-const FN = SUPABASE_URL + "/functions/v1";
-const TURNSTILE_SITE_KEY = "";   // set once the Cloudflare Turnstile widget exists; empty = honeypot + rate limits only
-
-const clientId = (() => { try { let v = localStorage.getItem("verve.client"); if (!v) { v = crypto.randomUUID(); localStorage.setItem("verve.client", v); } return v; } catch { return "anon-" + Math.random().toString(36).slice(2, 14); } })();
-const myVotes = (() => { try { return JSON.parse(localStorage.getItem("verve.votes") || "{}"); } catch { return {}; } })();
-const saveVotes = () => { try { localStorage.setItem("verve.votes", JSON.stringify(myVotes)); } catch {} };
-
-let board = [];
-let tab = "open";
+const ANON_KEY = "sb_publishable_eaoWTXUhM7jcbZ8vBRhtYw_bPIcJa8W";   // read-only key: the public stats view and the visit beacon
 const H = { "apikey": ANON_KEY, "Authorization": "Bearer " + ANON_KEY, "Content-Type": "application/json" };
+const clientId = (() => { try { let v = localStorage.getItem("verve.client"); if (!v) { v = crypto.randomUUID(); localStorage.setItem("verve.client", v); } return v; } catch { return "anon-" + Math.random().toString(36).slice(2, 14); } })();
 
-// one visit beacon per page load: time, the page's random client id (no IP, no user agent), path, referrer host, utm
+// one visit beacon per tab session: time, the page's random client id (no IP, no user agent), path, referrer host, utm
 (function logVisit() {
   try {
     const u = new URL(location.href);
@@ -267,121 +357,75 @@ const H = { "apikey": ANON_KEY, "Authorization": "Bearer " + ANON_KEY, "Content-
   } catch {}
 })();
 
-async function loadTested() {
-  try {
-    const r = await fetch(SUPABASE_URL + "/rest/v1/stats?select=laps,cars,tracks,community_reports", { headers: H });
-    if (!r.ok) return;
-    const rows = await r.json(); const s = rows && rows[0]; if (!s) return;
-    countUp("st-laps", Number(s.laps) || 0); countUp("st-cars", Number(s.cars) || 0); countUp("st-tracks", Number(s.tracks) || 0);
-    const n = Number(s.community_reports) || 0;
-    document.getElementById("st-src").textContent = n ? `our own test runs plus ${n.toLocaleString()} opted-in race reports from players` : "our own test runs so far; player race reports join the count as they arrive";
-  } catch {}
-}
-function countUp(id, target) {
-  const el = document.getElementById(id); if (!el) return;
+// Write the value FIRST, then animate. The old version drove the text purely from requestAnimationFrame, which
+// never fires in a background tab, so a page opened in an unfocused tab sat on its em dashes for good.
+function setNumber(id, target, suffix) {
+  const el = document.getElementById(id);
+  if (!el || !isFinite(target)) return;
+  const final = Math.round(target).toLocaleString() + (suffix || "");
+  el.textContent = final;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduce || target < 20) { el.textContent = target.toLocaleString(); return; }
+  if (reduce || document.hidden || target < 20) return;      // the count-up is decoration, never the source of truth
   const t0 = performance.now(), dur = 900;
-  const step = (t) => { const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3); el.textContent = Math.round(target * e).toLocaleString(); if (k < 1) requestAnimationFrame(step); };
+  const step = (t) => {
+    const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+    el.textContent = Math.round(target * e).toLocaleString() + (suffix || "");
+    if (k < 1) requestAnimationFrame(step); else el.textContent = final;
+  };
   requestAnimationFrame(step);
 }
-loadTested();
 
-async function loadBoard() {
-  const r = await fetch(SUPABASE_URL + "/rest/v1/board?select=*&order=score.desc,created_at.desc&limit=300", { headers: H });
-  if (!r.ok) throw new Error("board " + r.status);
-  board = await r.json();
-  render();
-}
-const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const STATUS_LABEL = { open: "open", queued: "in the queue", recording: "recording", done: "recorded", merged: "merged" };
-
-function rowHtml(s, pos) {
-  const mine = myVotes[s.id] || 0;
-  const meta = [];
-  meta.push(`<span class="pill ${s.status}">${STATUS_LABEL[s.status] || s.status}</span>`);
-  if (s.supporter) meta.push(`<span class="pill supporter">supporter</span>`);
-  if (s.requester) meta.push(`<span>by ${esc(s.requester)}</span>`);
-  if (s.mod_url) meta.push(`<a href="${esc(s.mod_url)}" rel="noopener nofollow">mod link</a>`);
-  meta.push(`<span class="mono">${new Date(s.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>`);
-  const right = s.status === "done" && s.video_url
-    ? `<a class="watch" href="${esc(s.video_url)}" rel="noopener">Watch</a>`
-    : `<div class="vote" data-id="${s.id}">
-         <button type="button" data-v="1" aria-pressed="${mine === 1}" aria-label="Vote up">&#9650;</button>
-         <span class="n">${s.score}</span>
-         <button type="button" data-v="-1" aria-pressed="${mine === -1}" aria-label="Vote down">&#9660;</button>
-       </div>`;
-  return `<div class="row ${s.status}${pos <= 3 ? " top" : ""}" data-id="${s.id}">
-    <div class="pos">${pos}</div>
-    <div class="main"><div class="title">${esc(s.title)}</div>${s.description ? `<p class="desc">${esc(s.description)}</p>` : ""}<div class="meta">${meta.join("")}</div></div>
-    ${right}</div>`;
-}
-
-function render() {
-  const open = board.filter(s => s.status === "open");
-  const progress = board.filter(s => s.status === "queued" || s.status === "recording");
-  const done = board.filter(s => s.status === "done");
-  const supp = open.filter(s => s.supporter), rest = open.filter(s => !s.supporter);
-  const list = tab === "open" ? [...supp, ...rest] : tab === "progress" ? progress : done;
-  const el = document.getElementById("rows");
-  el.innerHTML = list.length ? list.map((s, i) => rowHtml(s, i + 1)).join("")
-    : `<div class="empty">${tab === "open" ? "No open requests yet. Yours would be first." : tab === "progress" ? "Nothing in the queue right now." : "Nothing recorded yet."}</div>`;
-  const d = document.getElementById("donerows");
-  d.innerHTML = done.length ? done.map((s, i) => rowHtml(s, i + 1)).join("") : `<div class="empty">Nothing recorded yet. The first votes decide it.</div>`;
-}
-
-document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
-  tab = b.dataset.tab;
-  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", x === b));
-  render();
-}));
-
-document.addEventListener("click", async e => {
-  const btn = e.target.closest(".vote button"); if (!btn) return;
-  const box = btn.closest(".vote"); const id = Number(box.dataset.id); const v = Number(btn.dataset.v);
-  const value = (myVotes[id] || 0) === v ? 0 : v;
-  box.querySelectorAll("button").forEach(x => x.disabled = true);
+// laps / cars / tracks: live from the stats view (our own testing plus every opted-in player report)
+async function liveStats() {
   try {
-    const r = await fetch(FN + "/vote", { method: "POST", headers: H, body: JSON.stringify({ id, value, client: clientId }) });
-    const j = await r.json();
-    if (!r.ok || j.error) throw new Error(j.error || r.status);
-    myVotes[id] = j.mine; saveVotes();
-    const s = board.find(x => x.id === id); if (s) { s.votes_up = j.votes_up; s.votes_down = j.votes_down; s.score = j.score; }
-    board.sort((a, b) => b.score - a.score || (a.created_at < b.created_at ? 1 : -1));
-    render();
-  } catch (err) {
-    box.querySelector(".n").textContent = "!"; box.title = "Vote didn't go through: " + err.message;
-    box.querySelectorAll("button").forEach(x => x.disabled = false);
-  }
-});
-
-const form = document.getElementById("form");
-form.addEventListener("submit", async e => {
-  e.preventDefault();
-  const go = document.getElementById("go"); const out = document.getElementById("result");
-  const body = { title: form.title.value.trim(), description: form.description.value.trim(), mod_url: form.mod_url.value.trim(), requester: form.requester.value.trim(), kofi_email: form.kofi_email.value.trim(), hp: form.hp.value, client: clientId };
-  if (TURNSTILE_SITE_KEY && window.turnstile) body.turnstile = window.turnstile.getResponse();
-  if (body.title.length < 6) { out.hidden = false; out.className = "result bad"; out.textContent = "Give it a title of at least a few words."; return; }
-  go.disabled = true; out.hidden = false; out.className = "result"; out.textContent = "Checking it over…";
-  try {
-    const r = await fetch(FN + "/submit", { method: "POST", headers: H, body: JSON.stringify(body) });
-    const j = await r.json();
-    if (j.error) throw new Error(j.error);
-    if (!j.ok) { out.className = "result bad"; out.textContent = j.reason || "Didn't pass the filter."; }
-    else if (j.merged_into) { out.textContent = `That one's already on the board as "${j.existing_title}" — your vote was added to it.`; }
-    else { out.textContent = `On the board as "${j.title}"${j.supporter ? " with supporter priority" : ""}. Thanks!`; form.reset(); }
-    await loadBoard();
-  } catch (err) {
-    out.className = "result bad"; out.textContent = "Couldn't send it: " + err.message;
-  } finally { go.disabled = false; }
-});
-
-if (TURNSTILE_SITE_KEY) {
-  const s = document.createElement("script"); s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js"; s.async = true; s.defer = true;
-  s.onload = () => window.turnstile && window.turnstile.render("#turnstile", { sitekey: TURNSTILE_SITE_KEY, theme: "auto" });
-  document.head.appendChild(s);
+    const r = await fetch(SUPABASE_URL + "/rest/v1/stats?select=laps,cars,tracks,player_reports", { headers: H });
+    if (!r.ok) return;
+    const rows = await r.json(); const s = rows && rows[0]; if (!s) return;
+    setNumber("st-laps", Number(s.laps) || 0);
+    setNumber("st-cars", Number(s.cars) || 0);
+    setNumber("st-tracks", Number(s.tracks) || 0);
+    // player_reports, not community_reports: the latter counts our own harness rows too, so the old page
+    // credited players with 6,040 reports when 2,595 of them were ours
+    const n = Number(s.player_reports) || 0;
+    document.getElementById("st-src").textContent = n
+      ? `our own test runs plus ${n.toLocaleString()} opted-in race reports from players`
+      : "our own test runs so far; player race reports join the count as they arrive";
+  } catch {}
 }
-loadBoard().catch(err => { document.getElementById("rows").innerHTML = `<div class="empty err">The board didn't load (${esc(err.message)}). Try again in a moment.</div>`; });
+
+// downloads: GitHub is live from its own public API. OverTake has no API and blocks browser fetches, so its
+// figure rides along in stats.json with the date it was read, and the two are added together.
+async function downloads() {
+  let gh = 0, ot = 0, have = false;
+  try {
+    const r = await fetch("https://api.github.com/repos/ververacing/verve/releases?per_page=100");
+    if (r.ok) { for (const rel of await r.json()) for (const a of (rel.assets || [])) gh += (a.download_count || 0); have = true; }
+  } catch {}
+  try {
+    const r = await fetch("stats.json", { cache: "no-cache" });
+    if (r.ok) {
+      const s = await r.json();
+      ot = Number(s.overtake_downloads) || 0; if (ot) have = true;
+      const ok = Number(s.recovery_ok), att = Number(s.recovery_attempts);
+      if (att) setNumber("p-rec", Math.round(ok / att * 100), "%");
+      if (s.frame_ms_median != null) document.getElementById("p-ms").textContent = Number(s.frame_ms_median).toFixed(2);
+      if (s.lua_errors != null) document.getElementById("p-err").textContent = Number(s.lua_errors).toLocaleString();
+      if (s.error_reports) document.getElementById("p-errn").textContent = Number(s.error_reports).toLocaleString();
+      if (s.installs != null) setNumber("p-installs", Number(s.installs));
+      if (s.csp_builds != null) document.getElementById("p-builds").textContent = Number(s.csp_builds).toLocaleString();
+      // built from the parts, not parsed as UTC midnight: anywhere west of Greenwich that reads back a day early
+      if (s.as_of) {
+        const [y, m, d] = String(s.as_of).split("-").map(Number);
+        document.getElementById("p-asof").textContent =
+          new Date(y, m - 1, d).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" });
+      }
+    }
+  } catch {}
+  if (have) setNumber("st-dl", gh + ot);
+}
+
+liveStats();
+downloads();
 </script>
 </body>
 </html>
