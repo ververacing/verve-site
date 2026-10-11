@@ -6,6 +6,7 @@
  "recovery_ok": 5657,
  "frame_ms_median": 0.279,
  "lua_errors": 1077850,
+ "error_races": 2,
  "error_reports": 3479,
  "installs": 101,
  "csp_builds": 20,

@@ -266,7 +266,7 @@ footer a:hover{border-color:var(--accent)}
   <div class="proof">
     <div class="pcell"><b class="mono" id="p-rec">&#8212;</b><span>of spins recovered, so there's usually still a field at the flag</span></div>
     <div class="pcell"><b class="mono" id="p-ms">&#8212;</b><span>milliseconds a frame, median, out of the 16.7 you get at 60 fps</span></div>
-    <div class="pcell"><b class="mono" id="p-err">&#8212;</b><span>script errors, across <span id="p-errn">every</span> race<span id="p-errs">s</span> sent back</span></div>
+    <div class="pcell"><b class="mono" id="p-err">&#8212;</b><span>races that hit a script error, out of <span id="p-errn">every one</span> sent back</span></div>
     <div class="pcell"><b class="mono" id="p-installs">&#8212;</b><span>installs reporting, on <span id="p-builds">&#8212;</span> different CSP builds</span></div>
   </div>
   <p class="pnote">Recovery and performance figures as of <span id="p-asof">&#8212;</span>; the lap, car and track counts at the top of the page are live. A report is a race summary and nothing else. The <a href="privacy.html">privacy page</a> lists every field in it.</p>
@@ -409,7 +409,9 @@ async function downloads() {
       const ok = Number(s.recovery_ok), att = Number(s.recovery_attempts);
       if (att) setNumber("p-rec", Math.round(ok / att * 100), "%");
       if (s.frame_ms_median != null) document.getElementById("p-ms").textContent = Number(s.frame_ms_median).toFixed(2);
-      if (s.lua_errors != null) document.getElementById("p-err").textContent = Number(s.lua_errors).toLocaleString();
+      // races that hit an error, not the raw error count: one install on an unsupported CSP build logged a
+      // million of them from a per-frame loop, which says nothing about the other races
+      if (s.error_races != null) document.getElementById("p-err").textContent = Number(s.error_races).toLocaleString();
       if (s.error_reports) document.getElementById("p-errn").textContent = Number(s.error_reports).toLocaleString();
       if (s.installs != null) setNumber("p-installs", Number(s.installs));
       if (s.csp_builds != null) document.getElementById("p-builds").textContent = Number(s.csp_builds).toLocaleString();
