@@ -1,15 +1,15 @@
 {
- "as_of": "2026-10-13",
- "overtake_downloads": 898,
+ "as_of": "2026-10-14",
+ "overtake_downloads": 915,
  "overtake_url": "https://www.overtake.gg/downloads/verve-racing.86761/",
- "recovery_attempts": 9344,
- "recovery_ok": 8015,
- "frame_ms_median": 0.276,
+ "recovery_attempts": 10430,
+ "recovery_ok": 9057,
+ "frame_ms_median": 0.261,
  "lua_errors": 9228986,
  "error_races": 9,
- "error_reports": 4743,
- "installs": 124,
+ "error_reports": 5271,
+ "installs": 127,
  "csp_builds": 20,
- "reports": 4934,
- "overtake_as_of": "2026-10-13"
+ "reports": 5464,
+ "overtake_as_of": "2026-10-14"
 }
